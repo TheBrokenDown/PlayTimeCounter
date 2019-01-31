@@ -1,7 +1,7 @@
 package ru.delusive.ptc;
 
 import org.spongepowered.api.scheduler.Task;
-import ru.delusive.ptc.mysql.MysqlUtils;
+import ru.delusive.ptc.sql.SqlUtils;
 
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
@@ -9,14 +9,13 @@ import java.util.concurrent.TimeUnit;
 class PlayTimeThread {
 
     private Task task;
-    private Task.Builder builder;
-    private MysqlUtils mu;
+    private SqlUtils sqlUtils;
 
-    PlayTimeThread(){
-         mu = MainClass.getInstance().getMysqlUtils();
+    public PlayTimeThread(){
+        sqlUtils = MainClass.getInstance().getSqlUtils();
         task = Task.builder().execute(() -> {
             try {
-                mu.updatePlaytime();
+                sqlUtils.updatePlayTime();
             } catch (SQLException e) {
                 e.printStackTrace();
             }

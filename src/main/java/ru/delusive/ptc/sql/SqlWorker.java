@@ -1,4 +1,4 @@
-package ru.delusive.ptc.mysql;
+package ru.delusive.ptc.sql;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.sql.SqlService;
@@ -11,11 +11,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class MysqlWorker {
+public class SqlWorker {
     private SqlService sql;
     private Config cfg;
 
-    public MysqlWorker(){
+    public SqlWorker(){
         this.cfg = MainClass.getInstance().getConfigManager().getConfig();
     }
 
@@ -81,5 +81,9 @@ public class MysqlWorker {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public Connection getConnection() throws SQLException {
+        return getDataSource().getConnection();
     }
 }

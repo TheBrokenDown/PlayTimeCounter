@@ -6,19 +6,26 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandManager;
+import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
+import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.text.Text;
+import ru.delusive.ptc.commands.PlayTimeCommand;
 import ru.delusive.ptc.config.ConfigManager;
-import ru.delusive.ptc.mysql.MysqlUtils;
-import ru.delusive.ptc.mysql.MysqlWorker;
+import ru.delusive.ptc.sql.SqlUtils;
+import ru.delusive.ptc.sql.SqlWorker;
 
 import java.io.IOException;
 
-@Plugin(id = MainClass.plugin_id, name = "PlayTimeCounter", description = "Counts players' playtime", authors = {"Delusive"})
+@Plugin(id = MainClass.plugin_id, name = "PlayTimeCounter", description = "Counts players' playtime", authors = {"Delusive"},
+dependencies = {@Dependency(id = "nucleus", optional = true)})
 public class MainClass {
 
     static final String plugin_id = "playtimecounter";
@@ -29,16 +36,20 @@ public class MainClass {
     private ConfigurationLoader<CommentedConfigurationNode> loader;
     private ConfigManager cfgManager;
     private PlayTimeThread playTimeThread;
-    private static MainClass instance;
-    private MysqlWorker mysqlWorker;
-    private MysqlUtils mysqlUtils;
+    private NucleusIntegration nucleus;
+    private SqlWorker sqlWorker;
+    private SqlUtils sqlUtils;
+    private boolean isNucleusSuppEnabled;
     private PluginContainer plugin;
+    private static MainClass instance;
+    private boolean isEnabled;
 
     @Listener
     public void onServerStart(GameStartedServerEvent event) throws IOException, ObjectMappingException {
         instance = this;
         this.plugin = Sponge.getPluginManager().getPlugin(plugin_id).get();
         init();
+        registerCommands();
     }
 
     @Listener
@@ -51,45 +62,86 @@ public class MainClass {
     }
 
     private void init() throws IOException, ObjectMappingException {
+        isEnabled = false;
         initConfig();
         if(!cfgManager.getConfig().getGlobalParams().isEnabled()){
             logger.info("isEnabled is set to false in config file.");
             return;
         }
-        this.mysqlWorker = new MysqlWorker();
-        this.mysqlUtils = new MysqlUtils();
-        if(!mysqlWorker.canConnect()){
+
+        this.sqlWorker = new SqlWorker();
+        this.sqlUtils = new SqlUtils();
+        boolean isNucleusInstalled = Sponge.getPluginManager().getPlugin("nucleus").isPresent();
+        isNucleusSuppEnabled = isNucleusInstalled && !cfgManager.getConfig().getGlobalParams().isCountAFKTime();
+
+        if(!isNucleusInstalled && !cfgManager.getConfig().getGlobalParams().isCountAFKTime()){
+            logger.warn("isCountAFKTime is set to false, but Nucleus is not installed.");
+        }
+        if(!sqlWorker.canConnect()){
             logger.error("An error occurred while connecting to database!");
             return;
         }
-        if(this.mysqlWorker.createTable())
+        if(this.sqlWorker.createTable()) {
             playTimeThread = new PlayTimeThread();
-        else
+        } else {
             logger.error("An error occurred while creating the table!");
+            return;
+        }
+        isEnabled = true;
     }
 
     private void initConfig() throws IOException, ObjectMappingException {
         this.cfgManager = new ConfigManager(loader);
     }
 
+    private void registerCommands(){
+        CommandManager manager = Sponge.getCommandManager();
+        CommandSpec playtime = CommandSpec.builder()
+                .description(Text.of("Displays player's playtime"))
+                .permission("playtimecounter.cmd.playtime.base")
+                .executor(new PlayTimeCommand())
+                .arguments(
+                        GenericArguments.optional(
+                                GenericArguments.requiringPermission(
+                                        GenericArguments.string(Text.of("playerName")), "playtimecounter.cmd.playtime.others")))
+                .build();
+        manager.register(plugin, playtime,"playtime", "playtimecounter", "ptc");
+    }
+
+    public boolean isNucleusSuppEnabled(){
+        return isNucleusSuppEnabled;
+    }
+
+    public NucleusIntegration getNucleus (){
+        if(isNucleusSuppEnabled) {
+            if (nucleus == null) nucleus = new NucleusIntegration();
+            return nucleus;
+        }
+        return null;
+    }
+
     public ConfigManager getConfigManager(){
         return this.cfgManager;
     }
 
-    public MysqlWorker getMysqlWorker() {
-        return mysqlWorker;
+    public SqlWorker getSqlWorker() {
+        return sqlWorker;
     }
 
-    MysqlUtils getMysqlUtils() {
-        return mysqlUtils;
+    public SqlUtils getSqlUtils() {
+        return sqlUtils;
+    }
+
+    public boolean isEnabled(){
+        return isEnabled;
+    }
+
+    public PluginContainer getPlugin(){
+        return this.plugin;
     }
 
     public static MainClass getInstance(){
         return instance;
-    }
-
-    PluginContainer getPlugin(){
-        return this.plugin;
     }
 
 }
