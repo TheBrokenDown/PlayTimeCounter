@@ -9,19 +9,18 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import java.io.IOException;
 
 public class ConfigManager {
-
     private ConfigurationLoader<CommentedConfigurationNode> loader;
     private ConfigurationOptions options;
     private Config cfg;
 
     public ConfigManager(ConfigurationLoader<CommentedConfigurationNode> loader) throws IOException, ObjectMappingException {
         this.loader = loader;
-        this.options = ConfigurationOptions.defaults().setShouldCopyDefaults(true);
+        options = ConfigurationOptions.defaults().setShouldCopyDefaults(true);
         update();
     }
 
-    public Config getConfig(){
-        return this.cfg;
+    public Config getConfig() {
+        return cfg;
     }
 
     private void update() throws ObjectMappingException, IOException {

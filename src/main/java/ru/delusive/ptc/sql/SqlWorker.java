@@ -2,7 +2,7 @@ package ru.delusive.ptc.sql;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.sql.SqlService;
-import ru.delusive.ptc.MainClass;
+import ru.delusive.ptc.Main;
 import ru.delusive.ptc.config.Config;
 
 import javax.sql.DataSource;
@@ -12,26 +12,23 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class SqlWorker {
-    private SqlService sql;
-    private Config cfg;
+    private Config.DBParams dbParams;
 
-    public SqlWorker(){
-        this.cfg = MainClass.getInstance().getConfigManager().getConfig();
+    public SqlWorker() {
+        dbParams = Main.getInstance().getConfigManager().getConfig().getDBParams();
     }
 
     private DataSource getDataSource() throws SQLException {
-        sql = Sponge.getServiceManager().provide(SqlService.class).get();
-        String alias = sql.getConnectionUrlFromAlias(cfg.getDBParams().getAlias()).orElseThrow(() -> new IllegalArgumentException("JDBC alias not found! Check it in global.conf"));
+        SqlService sql = Sponge.getServiceManager().provide(SqlService.class).get();
+        String alias = sql.getConnectionUrlFromAlias(dbParams.getAlias()).orElseThrow(() -> new IllegalArgumentException("JDBC alias not found! Check it in global.conf"));
         return sql.getDataSource(alias);
     }
 
     void executeUpdate(String str, String... args) {
-        try(Connection con = getDataSource().getConnection()){
+        try(Connection con = getDataSource().getConnection()) {
             PreparedStatement stmt = con.prepareStatement(str);
-            int i = 1;
-            for(String arg : args){
-                stmt.setString(i, arg);
-                i++;
+            for (int i = 0; i < args.length; i++) {
+                stmt.setString(i + 1, args[i]);
             }
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -40,12 +37,10 @@ public class SqlWorker {
     }
 
     ResultSet executeQuery(String str, String... args) {
-        try(Connection con = getDataSource().getConnection()){
+        try(Connection con = getDataSource().getConnection()) {
             PreparedStatement stmt = con.prepareStatement(str);
-            int i = 1;
-            for(String arg : args){
-                stmt.setString(i, arg);
-                i++;
+            for (int i = 0; i < args.length; i++) {
+                stmt.setString(i + 1, args[i]);
             }
             return stmt.executeQuery();
         } catch (SQLException e) {
@@ -54,18 +49,18 @@ public class SqlWorker {
         return null;
     }
 
-    public boolean createTable(){
-        try(Connection con = getDataSource().getConnection()){
-            boolean isUuid = !cfg.getDBParams().getUuidColumn().equalsIgnoreCase("null");
+    public boolean createTable() {
+        try(Connection con = getDataSource().getConnection()) {
+            boolean isUuid = !dbParams.getUuidColumn().equalsIgnoreCase("null");
             String sql = String.format(
                     "CREATE TABLE IF NOT EXISTS`%s` (\n" +
                     "`%s` CHAR(30) NOT NULL,\n" +
                     (isUuid ? "`%s` CHAR(40) NULL,\n" : "%s") +
                     "`%s` INT NOT NULL\n" +
-                    ")", cfg.getDBParams().getTableName(),
-                    cfg.getDBParams().getUsernameColumn(),
-                    isUuid ? cfg.getDBParams().getUuidColumn() : "",
-                    cfg.getDBParams().getPlaytimeColumn());
+                    ")", dbParams.getTableName(),
+                    dbParams.getUsernameColumn(),
+                    isUuid ? dbParams.getUuidColumn() : "",
+                    dbParams.getPlaytimeColumn());
             con.prepareStatement(sql).executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -74,7 +69,7 @@ public class SqlWorker {
         return true;
     }
 
-    public boolean canConnect(){
+    public boolean canConnect() {
         try(Connection con = getDataSource().getConnection()) {
             return true;
         } catch (SQLException e) {

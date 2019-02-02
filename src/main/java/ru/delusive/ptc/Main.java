@@ -24,11 +24,10 @@ import ru.delusive.ptc.sql.SqlWorker;
 
 import java.io.IOException;
 
-@Plugin(id = MainClass.plugin_id, name = "PlayTimeCounter", description = "Counts players' playtime", authors = {"Delusive"},
+@Plugin(id = Main.PLUGIN_ID, name = "PlayTimeCounter", description = "Counts players' playtime", authors = {"Delusive"},
 dependencies = {@Dependency(id = "nucleus", optional = true)})
-public class MainClass {
-
-    static final String plugin_id = "playtimecounter";
+public class Main {
+    static final String PLUGIN_ID = "playtimecounter";
     @Inject
     private Logger logger;
     @Inject
@@ -41,13 +40,13 @@ public class MainClass {
     private SqlUtils sqlUtils;
     private boolean isNucleusSuppEnabled;
     private PluginContainer plugin;
-    private static MainClass instance;
+    private static Main instance;
     private boolean isEnabled;
 
     @Listener
-    public void onServerStart(GameStartedServerEvent event) throws IOException, ObjectMappingException {
+    public void onServerStart(GameStartedServerEvent e) throws IOException, ObjectMappingException {
         instance = this;
-        this.plugin = Sponge.getPluginManager().getPlugin(plugin_id).get();
+        this.plugin = Sponge.getPluginManager().getPlugin(PLUGIN_ID).get();
         init();
         registerCommands();
     }
@@ -55,8 +54,9 @@ public class MainClass {
     @Listener
     public void onReload(GameReloadEvent e) throws IOException, ObjectMappingException {
         logger.info("Reloading config...");
-        if(playTimeThread != null)
+        if(playTimeThread != null) {
             playTimeThread.getTask().cancel();
+        }
         init();
         logger.info("Reloaded!");
     }
@@ -64,24 +64,24 @@ public class MainClass {
     private void init() throws IOException, ObjectMappingException {
         isEnabled = false;
         initConfig();
-        if(!cfgManager.getConfig().getGlobalParams().isEnabled()){
+        if(!cfgManager.getConfig().getGlobalParams().isEnabled()) {
             logger.info("isEnabled is set to false in config file.");
             return;
         }
 
-        this.sqlWorker = new SqlWorker();
-        this.sqlUtils = new SqlUtils();
+        sqlWorker = new SqlWorker();
+        sqlUtils = new SqlUtils();
         boolean isNucleusInstalled = Sponge.getPluginManager().getPlugin("nucleus").isPresent();
         isNucleusSuppEnabled = isNucleusInstalled && !cfgManager.getConfig().getGlobalParams().isCountAFKTime();
 
-        if(!isNucleusInstalled && !cfgManager.getConfig().getGlobalParams().isCountAFKTime()){
+        if(!isNucleusInstalled && !cfgManager.getConfig().getGlobalParams().isCountAFKTime()) {
             logger.warn("isCountAFKTime is set to false, but Nucleus is not installed.");
         }
-        if(!sqlWorker.canConnect()){
+        if(!sqlWorker.canConnect()) {
             logger.error("An error occurred while connecting to database!");
             return;
         }
-        if(this.sqlWorker.createTable()) {
+        if(sqlWorker.createTable()) {
             playTimeThread = new PlayTimeThread();
         } else {
             logger.error("An error occurred while creating the table!");
@@ -94,7 +94,7 @@ public class MainClass {
         this.cfgManager = new ConfigManager(loader);
     }
 
-    private void registerCommands(){
+    private void registerCommands() {
         CommandManager manager = Sponge.getCommandManager();
         CommandSpec playtime = CommandSpec.builder()
                 .description(Text.of("Displays player's playtime"))
@@ -108,11 +108,11 @@ public class MainClass {
         manager.register(plugin, playtime,"playtime", "playtimecounter", "ptc");
     }
 
-    public boolean isNucleusSuppEnabled(){
+    public boolean isNucleusSuppEnabled() {
         return isNucleusSuppEnabled;
     }
 
-    public NucleusIntegration getNucleus (){
+    public NucleusIntegration getNucleus() {
         if(isNucleusSuppEnabled) {
             if (nucleus == null) nucleus = new NucleusIntegration();
             return nucleus;
@@ -120,8 +120,8 @@ public class MainClass {
         return null;
     }
 
-    public ConfigManager getConfigManager(){
-        return this.cfgManager;
+    public ConfigManager getConfigManager() {
+        return cfgManager;
     }
 
     public SqlWorker getSqlWorker() {
@@ -132,15 +132,15 @@ public class MainClass {
         return sqlUtils;
     }
 
-    public boolean isEnabled(){
+    public boolean isEnabled() {
         return isEnabled;
     }
 
-    public PluginContainer getPlugin(){
-        return this.plugin;
+    public PluginContainer getPlugin() {
+        return plugin;
     }
 
-    public static MainClass getInstance(){
+    public static Main getInstance() {
         return instance;
     }
 
