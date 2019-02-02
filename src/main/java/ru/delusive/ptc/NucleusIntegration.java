@@ -4,10 +4,9 @@ import io.github.nucleuspowered.nucleus.api.NucleusAPI;
 import io.github.nucleuspowered.nucleus.api.service.NucleusAFKService;
 
 public class NucleusIntegration {
-
     private NucleusAFKService afkService;
 
-    public NucleusIntegration(){
+    public NucleusIntegration() {
         afkService = NucleusAPI.getAFKService().get();
     }
 
