@@ -1,7 +1,7 @@
 language: java
 jdk: oraclejdk8
 
-# Quickest way to skip the install step
+before_script: - chmod +x gradlew
 install: true
 script: ./gradlew build
 
