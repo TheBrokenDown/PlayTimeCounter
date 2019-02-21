@@ -7,7 +7,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 public class Config {
     @Setting(value="global")
     private GlobalParams globalParams = new GlobalParams();
-    @Setting(value="DBParams")
+    @Setting
     private DBParams DBParams = new DBParams();
     @Setting
     private Messages messages = new Messages();
@@ -19,6 +19,8 @@ public class Config {
         @Setting(comment = "Should plugin count player's playing time while he is afk? (Using Nucleus AFK API)\n" +
                 "If you will change it from false to true, keep in mind that plugin will change all playing time values to values from statistic (not a bug but a feature)")
         private boolean countAFKTime = true;
+        @Setting(comment = "How many users should be displayed in playing time top?")
+        private int playTimeTopUserCount = 5;
 
         public boolean isEnabled() {
             return isEnabled;
@@ -26,6 +28,10 @@ public class Config {
 
         public boolean isCountAFKTime() {
             return countAFKTime;
+        }
+
+        public int getPlayTimeTopUserCount() {
+            return playTimeTopUserCount;
         }
 
     }
@@ -69,13 +75,17 @@ public class Config {
         @Setting
         private String errorPluginDisabled = "&cPlugin disabled!";
         @Setting
-        private String errorPlayerNotFound = "&cPlayer with specified name didn't found!";
+        private String errorPlayerNotFound = "&cPlayer with specified name not found!";
         @Setting
         private String errorSql = "&cUnexpected error. Please report this to the admin!";
         @Setting
         private String playtimeFormatSelf = "&aYou played for &b%hours% &ahours and &b%minutes% &amins.";
         @Setting
         private String playtimeFormatOther = "&aPlayer &b%player% &aplayed for &b%hours% &ahours and &b%minutes% &amins.";
+        @Setting
+        private String playTimeTopHeader = "&a==========| TOP |==========";
+        @Setting
+        private String playTimeTopLineFormat = "&a[&b%position%&a] &b%player% &a- &b%hours%&ah &b%minutes%&am";
 
         public String getErrorPluginDisabled() {
             return errorPluginDisabled;
@@ -95,6 +105,14 @@ public class Config {
 
         public String getPlaytimeFormatOther() {
             return playtimeFormatOther;
+        }
+
+        public String getPlayTimeTopHeader() {
+            return playTimeTopHeader;
+        }
+
+        public String getPlayTimeTopLineFormat() {
+            return playTimeTopLineFormat;
         }
     }
 

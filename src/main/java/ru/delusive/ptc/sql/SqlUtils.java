@@ -5,6 +5,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.statistic.Statistics;
 import ru.delusive.ptc.Main;
 import ru.delusive.ptc.NucleusIntegration;
+import ru.delusive.ptc.PlayTimeData;
 import ru.delusive.ptc.config.Config;
 
 import java.sql.Connection;
@@ -16,21 +17,47 @@ import java.util.*;
 public class SqlUtils {
     private SqlWorker sql;
     private Config.DBParams dbParams;
+    private int playTimeTopUserCount;
 
     public SqlUtils() {
         sql = Main.getInstance().getSqlWorker();
-        dbParams = Main.getInstance().getConfigManager().getConfig().getDBParams();
+        Config cfg = Main.getInstance().getConfigManager().getConfig();
+        dbParams = cfg.getDBParams();
+        playTimeTopUserCount = cfg.getGlobalParams().getPlayTimeTopUserCount();
     }
 
-    public int getPlayTime(String username) throws SQLException {
-        String query = String.format("SELECT `%s` FROM `%s` WHERE `%s` = ? LIMIT 1",
+    public int getPlayTime(String username) throws SQLException, IllegalArgumentException {
+        String query = String.format("SELECT `%s` FROM `%s` WHERE `%s` = ?",
                 dbParams.getPlaytimeColumn(),
                 dbParams.getTableName(),
                 dbParams.getUsernameColumn());
-        ResultSet resultSet = sql.executeQuery(query, username);
+        ResultSet rs = sql.executeQuery(query, username);
         int playtime = 0;
-        if(resultSet.next()) playtime = resultSet.getInt(1);
+        if(rs.next()) {
+            playtime = rs.getInt(1);
+        } else {
+            throw new IllegalArgumentException("Player not found!");
+        }
         return playtime;
+    }
+
+
+    public Map<Integer, PlayTimeData> getPlayTimeTop() {
+        String query = String.format("SELECT `%s`, `%s` FROM `%s` ORDER BY `%s` DESC LIMIT %s",
+                dbParams.getUsernameColumn(),
+                dbParams.getPlaytimeColumn(),
+                dbParams.getTableName(),
+                dbParams.getPlaytimeColumn(),
+                playTimeTopUserCount);
+        ResultSet res = sql.executeQuery(query);
+        Map<Integer, PlayTimeData> map = new HashMap<>();
+        try {
+            for(int i = 1; res.next(); i++) {
+                PlayTimeData playTimeData = new PlayTimeData(res.getString(1), res.getInt(2));
+                map.put(i, playTimeData);
+            }
+        } catch (SQLException e) {e.printStackTrace(); }
+        return map;
     }
 
     //Tell me, is it ok to allow bulky methods like this to exist? Maybe i should split it?
@@ -69,7 +96,7 @@ public class SqlUtils {
         boolean isUUIDEnabled = !dbParams.getUuidColumn().equalsIgnoreCase("null");
         String stmt;
         if(notPlayedBefore.size() != 0) {
-            String[] params = new String[notPlayedBefore.size()*3];
+            String[] params;
             if (isUUIDEnabled) {
                 stmt = String.format("INSERT INTO `%s` (`%s`, `%s`, `%s`) VALUES %s",
                         dbParams.getTableName(),
@@ -77,6 +104,7 @@ public class SqlUtils {
                         dbParams.getUuidColumn(),
                         dbParams.getPlaytimeColumn(),
                         toQuestionMarks(notPlayedBefore.size(), 3));
+                params = new String[notPlayedBefore.size()*3];
                 int i = 0;
                 for(Map.Entry<String, Player> set : notPlayedBefore.entrySet()) {
                     params[3*i] = set.getKey();
@@ -90,6 +118,7 @@ public class SqlUtils {
                         dbParams.getUsernameColumn(),
                         dbParams.getPlaytimeColumn(),
                         toQuestionMarks(notPlayedBefore.size(), 2));
+                params = new String[notPlayedBefore.size()*2];
                 int i = 0;
                 for(Map.Entry<String, Player> set : notPlayedBefore.entrySet()) {
                     params[2*i] = set.getKey();
@@ -131,6 +160,14 @@ public class SqlUtils {
     private String toQuestionMarks(Collection<String> collection){
         StringBuilder sb = new StringBuilder();
         for(int i = 0; i < collection.size(); i++){
+            sb.append("?, ");
+        }
+        return sb.toString().substring(0, sb.toString().length() - 2);
+    }
+
+    private String toQuestionMarks(String[] arr){
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < arr.length; i++){
             sb.append("?, ");
         }
         return sb.toString().substring(0, sb.toString().length() - 2);

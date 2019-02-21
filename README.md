@@ -1,5 +1,5 @@
-# PlayTimeCounter
-Sponge plugin that counts players' playtime.
+# PlayTimeCounter [![Build Status](https://travis-ci.org/TheBrokenDown/PlayTimeCounter.svg?branch=master)](https://travis-ci.org/TheBrokenDown/PlayTimeCounter)
+Sponge plugin that counts players' playing time.
 
 ## Setup
 Plugin tested with SQLite and MySQL, but may be it works with something another.
@@ -8,7 +8,7 @@ If you want to use MySQL, set alias in that format: "alias_name"="jdbc:mysql://u
 If you want to use SQLite, set alias in that format: "alias_name"="jdbc:sqlite:path_to_file.db".
 2. Drop .jar file into the mods folder.
 3. Restart the server.
-4. Configure plugin configuration file and reload it by the command "/sponge plugins reload".
+4. Configure plugin configuration file and reload it by the command "/ptcreload".
 
 ## Commands and perms
 * ```/playtimecounter [playerName]``` - Displays playerName's playing time. If argument isn't specified, displays playing time of command sender.

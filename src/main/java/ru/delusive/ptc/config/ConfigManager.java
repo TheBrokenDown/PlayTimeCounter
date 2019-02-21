@@ -8,6 +8,7 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
 import java.io.IOException;
 
+
 public class ConfigManager {
     private ConfigurationLoader<CommentedConfigurationNode> loader;
     private ConfigurationOptions options;

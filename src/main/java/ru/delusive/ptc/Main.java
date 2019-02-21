@@ -18,6 +18,8 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import ru.delusive.ptc.commands.PlayTimeCommand;
+import ru.delusive.ptc.commands.PlayTimeTopCommand;
+import ru.delusive.ptc.commands.ReloadCommand;
 import ru.delusive.ptc.config.ConfigManager;
 import ru.delusive.ptc.sql.SqlUtils;
 import ru.delusive.ptc.sql.SqlWorker;
@@ -53,6 +55,10 @@ public class Main {
 
     @Listener
     public void onReload(GameReloadEvent e) throws IOException, ObjectMappingException {
+        reloadConfig();
+    }
+
+    public void reloadConfig() throws IOException, ObjectMappingException {
         logger.info("Reloading config...");
         if(playTimeThread != null) {
             playTimeThread.getTask().cancel();
@@ -63,7 +69,7 @@ public class Main {
 
     private void init() throws IOException, ObjectMappingException {
         isEnabled = false;
-        initConfig();
+        this.cfgManager = new ConfigManager(loader); //Config initialization
         if(!cfgManager.getConfig().getGlobalParams().isEnabled()) {
             logger.info("isEnabled is set to false in config file.");
             return;
@@ -90,14 +96,10 @@ public class Main {
         isEnabled = true;
     }
 
-    private void initConfig() throws IOException, ObjectMappingException {
-        this.cfgManager = new ConfigManager(loader);
-    }
-
     private void registerCommands() {
         CommandManager manager = Sponge.getCommandManager();
         CommandSpec playtime = CommandSpec.builder()
-                .description(Text.of("Displays player's playtime"))
+                .description(Text.of("Displays player's playing time"))
                 .permission("playtimecounter.cmd.playtime.base")
                 .executor(new PlayTimeCommand())
                 .arguments(
@@ -106,6 +108,21 @@ public class Main {
                                         GenericArguments.string(Text.of("playerName")), "playtimecounter.cmd.playtime.others")))
                 .build();
         manager.register(plugin, playtime,"playtime", "playtimecounter", "ptc");
+
+        CommandSpec playtimetop = CommandSpec.builder()
+                .description(Text.of("Displays top players by playing time"))
+                .permission("playtimecounter.cmd.playtimetop.base")
+                .executor(new PlayTimeTopCommand())
+                .build();
+        manager.register(plugin, playtimetop,"playtimetop", "topplaytime", "ptctop");
+
+        CommandSpec reload = CommandSpec.builder()
+                .description(Text.of("Reloads plugin config"))
+                .permission("playtimecounter.cmd.reload.base")
+                .executor(new ReloadCommand())
+                .build();
+        manager.register(plugin, reload, "ptcreload");
+
     }
 
     public boolean isNucleusSuppEnabled() {
