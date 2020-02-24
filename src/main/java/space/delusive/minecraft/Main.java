@@ -1,4 +1,4 @@
-package ru.delusive.ptc;
+package space.delusive.minecraft;
 
 import com.google.inject.Inject;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -17,12 +17,12 @@ import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
-import ru.delusive.ptc.commands.PlayTimeCommand;
-import ru.delusive.ptc.commands.PlayTimeTopCommand;
-import ru.delusive.ptc.commands.ReloadCommand;
-import ru.delusive.ptc.config.ConfigManager;
-import ru.delusive.ptc.sql.SqlUtils;
-import ru.delusive.ptc.sql.SqlWorker;
+import space.delusive.minecraft.commands.PlayTimeCommand;
+import space.delusive.minecraft.commands.PlayTimeTopCommand;
+import space.delusive.minecraft.commands.ReloadCommand;
+import space.delusive.minecraft.config.ConfigManager;
+import space.delusive.minecraft.sql.SqlUtils;
+import space.delusive.minecraft.sql.SqlWorker;
 
 import java.io.IOException;
 

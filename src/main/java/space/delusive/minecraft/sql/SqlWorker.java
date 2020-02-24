@@ -1,9 +1,9 @@
-package ru.delusive.ptc.sql;
+package space.delusive.minecraft.sql;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.sql.SqlService;
-import ru.delusive.ptc.Main;
-import ru.delusive.ptc.config.Config;
+import space.delusive.minecraft.Main;
+import space.delusive.minecraft.config.Config;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

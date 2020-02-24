@@ -1,4 +1,4 @@
-package ru.delusive.ptc.commands;
+package space.delusive.minecraft.commands;
 
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -10,8 +10,8 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
-import ru.delusive.ptc.Main;
-import ru.delusive.ptc.config.Config;
+import space.delusive.minecraft.Main;
+import space.delusive.minecraft.config.Config;
 
 import java.sql.SQLException;
 

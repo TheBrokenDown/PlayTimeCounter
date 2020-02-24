@@ -1,7 +1,7 @@
-package ru.delusive.ptc;
+package space.delusive.minecraft;
 
 import org.spongepowered.api.scheduler.Task;
-import ru.delusive.ptc.sql.SqlUtils;
+import space.delusive.minecraft.sql.SqlUtils;
 
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;

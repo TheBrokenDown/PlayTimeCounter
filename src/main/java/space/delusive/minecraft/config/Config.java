@@ -1,4 +1,4 @@
-package ru.delusive.ptc.config;
+package space.delusive.minecraft.config;
 
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;

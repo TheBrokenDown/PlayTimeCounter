@@ -1,4 +1,4 @@
-package ru.delusive.ptc.commands;
+package space.delusive.minecraft.commands;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -10,9 +10,9 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.text.serializer.TextSerializers;
-import ru.delusive.ptc.Main;
-import ru.delusive.ptc.PlayTimeData;
-import ru.delusive.ptc.config.Config;
+import space.delusive.minecraft.Main;
+import space.delusive.minecraft.PlayTimeData;
+import space.delusive.minecraft.config.Config;
 
 import java.util.Map;
 

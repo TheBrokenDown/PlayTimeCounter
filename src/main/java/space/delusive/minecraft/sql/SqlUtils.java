@@ -1,12 +1,12 @@
-package ru.delusive.ptc.sql;
+package space.delusive.minecraft.sql;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.statistic.Statistics;
-import ru.delusive.ptc.Main;
-import ru.delusive.ptc.NucleusIntegration;
-import ru.delusive.ptc.PlayTimeData;
-import ru.delusive.ptc.config.Config;
+import space.delusive.minecraft.Main;
+import space.delusive.minecraft.NucleusIntegration;
+import space.delusive.minecraft.PlayTimeData;
+import space.delusive.minecraft.config.Config;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,7 +27,7 @@ public class SqlUtils {
     }
 
     public int getPlayTime(String username) throws SQLException, IllegalArgumentException {
-        String query = String.format("SELECT `%s` FROM `%s` WHERE `%s` = ?",
+        String query = String.format("SELECT %s FROM %s WHERE %s = ?",
                 dbParams.getPlaytimeColumn(),
                 dbParams.getTableName(),
                 dbParams.getUsernameColumn());
@@ -43,7 +43,7 @@ public class SqlUtils {
 
 
     public Map<Integer, PlayTimeData> getPlayTimeTop() {
-        String query = String.format("SELECT `%s`, `%s` FROM `%s` ORDER BY `%s` DESC LIMIT %s",
+        String query = String.format("SELECT %s, %s FROM %s ORDER BY %s DESC LIMIT %s",
                 dbParams.getUsernameColumn(),
                 dbParams.getPlaytimeColumn(),
                 dbParams.getTableName(),

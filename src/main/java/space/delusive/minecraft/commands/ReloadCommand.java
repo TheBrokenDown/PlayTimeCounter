@@ -1,4 +1,4 @@
-package ru.delusive.ptc.commands;
+package space.delusive.minecraft.commands;
 
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.command.CommandException;
@@ -9,7 +9,7 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-import ru.delusive.ptc.Main;
+import space.delusive.minecraft.Main;
 
 import java.io.IOException;
 

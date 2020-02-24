@@ -1,4 +1,4 @@
-package ru.delusive.ptc;
+package space.delusive.minecraft;
 
 public class PlayTimeData {
     private String username;

@@ -1,4 +1,4 @@
-package ru.delusive.ptc;
+package space.delusive.minecraft;
 
 import io.github.nucleuspowered.nucleus.api.NucleusAPI;
 import io.github.nucleuspowered.nucleus.api.service.NucleusAFKService;

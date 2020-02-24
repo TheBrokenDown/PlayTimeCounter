@@ -1,4 +1,4 @@
-package ru.delusive.ptc.config;
+package space.delusive.minecraft.config;
 
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationOptions;
