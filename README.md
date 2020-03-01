@@ -1,4 +1,4 @@
-# PlayTimeCounter [![Build Status](https://travis-ci.org/TheBrokenDown/PlayTimeCounter.svg?branch=master)](https://travis-ci.org/TheBrokenDown/PlayTimeCounter)
+# PlayTimeCounter
 Sponge plugin that counts players' playing time.
 
 ## Setup
